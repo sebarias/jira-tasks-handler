@@ -1,0 +1,4 @@
+{
+    "create_story_rs" :
+        { "issues": [{"id": "439938", "key": "BMBU-6623", "self": "http://jira.bch.bancodechile.cl:8080/rest/api/2/issue/439938"}], "errors": []}
+}
