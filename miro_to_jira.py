@@ -3,8 +3,6 @@ import requests
 import sys
 import re
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sbn
 import numpy as np
 import base64
 import html
@@ -29,11 +27,13 @@ class Miro():
         self.def_size_indicator = data['def_size_indicator']
         self.colors_task_type = data['colors_task_type']
         self.def_size = data['def_size']
+        self.issues = []
         
     def request_to_miro(self,uri):
         url = "{}{}".format(self.url, uri)
         headers = {'authorization': self.bearer}
         response = requests.request("GET", url, headers=headers)
+        print(response.text)
         results = json.loads(response.text)
         return results 
 
@@ -51,6 +51,16 @@ class Miro():
                 return task_type, title, None
         else:
             return None, None, None   
+
+    def search_div(self, name):
+        if name is not None:
+            
+            data = self.issues
+            for d in data:
+                print(d['name'])
+                if d['name'] == name:
+                    print('Encontrado')
+                    return d
 
     def get_data_from_miro(self,story=True):
         """
@@ -122,6 +132,7 @@ class Miro():
 
         def to_jira(self, data):
             return None
+        
 
 class Jira():
     url_api_2 : str
@@ -296,7 +307,7 @@ def create_dic_issuestypes(x):
     dic = {}
     dic['name'] = x['name']
     dic['id'] = x['id']
-    dic['size']: x['size']
+    dic['size']= x['size']
     dic['label'] = x['label']
     dic['type'] = x['type']
     return dic
@@ -343,7 +354,7 @@ def create_dic_issuestypes(x):
     dic = {}
     dic['name'] = x['name']
     dic['id'] = x['id']
-    dic['description']: x['description']
+    dic['description']= x['description']
     dic['url'] = x['self']
     dic['subtask'] = x['subtask']
     return dic
@@ -367,6 +378,21 @@ def mostrar_menu(saldo = 0):
     print('6) Info Issue')
     print('7) Terminar')
     print()
+
+def option_9(miro):
+    if len(miro.issues) > 0:
+        print('ingrese nombre a buscar.\n')
+        str = input()
+        if str:
+            rs = miro.search_div(str)
+            if rs is None:
+                print('issue no encontrado')
+            print(rs)
+        else:
+            print('dato no ingresado')
+            
+    else:
+        print('primero hay que cargar datos de Miro...opción 1')
 
 def main():
     #tbbt_proy = 19803
@@ -421,6 +447,8 @@ def main():
             print('Saliendo')
         elif opt_menu == '8':
             jira.upload_jira_data(miro.issues)
+        elif opt_menu == '9':
+            option_9(miro)
         else:
             print('Opción inválida\n')
     print()
